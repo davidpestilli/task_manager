@@ -34,11 +34,16 @@ task_manager/
 │   │   │   ├── TaskList.jsx
 │   │   │   ├── TaskModal.jsx
 │   │   │   ├── CreateTaskModal.jsx
+│   │   │   ├── DraggableTaskCard.jsx
 │   │   │   ├── TaskSteps.jsx
 │   │   │   ├── TaskComments.jsx
 │   │   │   ├── TaskHistory.jsx
 │   │   │   ├── DependencyFlow.jsx
+│   │   │   ├── DependencySelector.jsx
+│   │   │   ├── FlowChart.jsx
 │   │   │   ├── DragDropArea.jsx
+│   │   │   ├── DragPreview.jsx
+│   │   │   ├── DropZone.jsx
 │   │   │   ├── TaskFilters.jsx
 │   │   │   ├── TaskStatusBadge.jsx
 │   │   │   └── index.js
@@ -65,6 +70,7 @@ task_manager/
 │   │   │   │   ├── SearchGlobal.jsx
 │   │   │   │   ├── SearchResults.jsx
 │   │   │   │   ├── SearchModal.jsx
+│   │   │   │   ├── ResultCard.jsx
 │   │   │   │   └── index.js
 │   │   │   ├── notifications/
 │   │   │   │   ├── NotificationCenter.jsx
@@ -90,6 +96,10 @@ task_manager/
 │   │   │   │   ├── ProgressBar.jsx
 │   │   │   │   ├── Avatar.jsx
 │   │   │   │   ├── Skeleton.jsx
+│   │   │   │   ├── FlowNode.jsx
+│   │   │   │   ├── FlowEdge.jsx
+│   │   │   │   ├── StatCard.jsx
+│   │   │   │   ├── Chart.jsx
 │   │   │   │   └── index.js
 │   │   │   ├── forms/
 │   │   │   │   ├── FormField.jsx
@@ -189,6 +199,7 @@ task_manager/
 │   │   ├── api/
 │   │   │   ├── supabase.js
 │   │   │   ├── client.js
+│   │   │   ├── searchService.js
 │   │   │   └── index.js
 │   │   ├── auth/
 │   │   │   ├── authService.js
@@ -242,6 +253,14 @@ task_manager/
 │   │   │   └── index.js
 │   │   ├── helpers/
 │   │   │   ├── dateFormatter.js
+│   │   │   ├── flowUtils.js
+│   │   │   ├── validationUtils.js
+│   │   │   ├── dragDropAnalytics.js
+│   │   │   ├── dragDropUtils.js
+│   │   │   ├── searchUtils.js
+│   │   │   ├── highlightUtils.js
+│   │   │   ├── chartUtils.js
+│   │   │   ├── dependencyValidator.js
 │   │   │   ├── stringUtils.js
 │   │   │   ├── numberUtils.js
 │   │   │   ├── colorUtils.js
@@ -266,6 +285,7 @@ task_manager/
 │   │   ├── globals.css
 │   │   ├── components.css
 │   │   ├── utilities.css
+│   │   ├── index.css
 │   │   └── animations.css
 │   ├── assets/
 │   │   ├── images/

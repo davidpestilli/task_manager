@@ -1,0 +1,126 @@
+/* Imports de estilos base */
+@import './globals.css';
+@import './components.css';
+@import './utilities.css';
+@import './animations.css';
+
+/* ===================================
+   CONFIGURAÇÕES GLOBAIS ADICIONAIS
+   =================================== */
+
+/* Configurações para drag & drop */
+* {
+  /* Evitar seleção de texto durante drag */
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* Permitir seleção em elementos específicos */
+input,
+textarea,
+[contenteditable="true"],
+.selectable-text {
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
+}
+
+/* Configurações de cursor para elementos interativos */
+.draggable {
+  cursor: grab;
+}
+
+.draggable:active {
+  cursor: grabbing;
+}
+
+.drop-zone {
+  position: relative;
+}
+
+/* ===================================
+   CLASSES UTILITÁRIAS EXTRAS
+   =================================== */
+
+/* Estado de loading para elementos */
+.loading-state {
+  position: relative;
+  pointer-events: none;
+}
+
+.loading-state::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+}
+
+/* Classes para diferentes estados de validação */
+.validation-success {
+  @apply ring-2 ring-green-300 bg-green-50;
+}
+
+.validation-error {
+  @apply ring-2 ring-red-300 bg-red-50;
+}
+
+.validation-warning {
+  @apply ring-2 ring-yellow-300 bg-yellow-50;
+}
+
+/* Melhorias de acessibilidade */
+.focus-visible {
+  @apply outline-none ring-2 ring-blue-500 ring-offset-2;
+}
+
+/* Estados para componentes interativos */
+.interactive-element {
+  @apply transition-all duration-200 ease-out;
+}
+
+.interactive-element:hover {
+  @apply transform -translate-y-0.5 shadow-lg;
+}
+
+.interactive-element:active {
+  @apply transform translate-y-0;
+}
+
+/* ===================================
+   RESPONSIVIDADE GLOBAL
+   =================================== */
+
+/* Ajustes para dispositivos touch */
+@media (pointer: coarse) {
+  .draggable-item {
+    /* Aumentar área de toque em dispositivos móveis */
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  .drop-zone {
+    /* Aumentar área de drop em dispositivos móveis */
+    min-height: 60px;
+  }
+}
+
+/* Ajustes para telas pequenas */
+@media (max-width: 640px) {
+  .drag-drop-area {
+    /* Simplificar layout em mobile */
+    padding: 1rem;
+  }
+  
+  .drag-preview {
+    /* Reduzir preview em mobile */
+    max-width: 250px;
+    font-size: 0.875rem;
+  }
+}

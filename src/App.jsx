@@ -3,11 +3,14 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { Toaster } from 'react-hot-toast'
 
 // Importações de contexto e autenticação
-import { AuthProvider, ProjectProvider } from '@/context'
+import { AuthProvider, ProjectProvider, TaskProvider, NotificationProvider } from '@/context'
 import { ProtectedRoute } from '@/components/auth'
 import { LoginPage, RegisterPage, ForgotPasswordPage } from '@/pages/auth'
+import { DashboardPage } from '@/pages/dashboard'
 import { ProjectsPage, ProjectDetailPage } from '@/pages/projects'
 import { PeoplePage, PersonDetailPage } from '@/pages/people'
+import { TasksPage, TaskDetailPage } from '@/pages/tasks'
+import { NotificationsPage } from '@/pages/notifications'
 import { FullPageSpinner } from '@/components/shared/ui'
 import { useAuth } from '@/hooks/auth'
 
@@ -44,117 +47,150 @@ function App() {
   return (
     <AuthProvider>
       <ProjectProvider>
-        <Router basename={import.meta.env.VITE_BASE_URL || '/'}>
-          <div className="App min-h-screen bg-gray-50">
-            {/* Área principal da aplicação */}
-            <main className="min-h-screen">
-              <Routes>
-                {/* Rota raiz - redireciona baseado na autenticação */}
-                <Route 
-                  path="/" 
-                  element={<RootRedirect />} 
-                />
+        <TaskProvider>
+          <NotificationProvider>
+            <Router basename={import.meta.env.VITE_BASE_URL || '/'}>
+              <div className="App min-h-screen bg-gray-50">
+                {/* Área principal da aplicação */}
+                <main className="min-h-screen">
+                  <Routes>
+                    {/* Rota raiz - redireciona baseado na autenticação */}
+                    <Route 
+                      path="/" 
+                      element={<RootRedirect />} 
+                    />
 
-                {/* Rotas de autenticação (públicas) */}
-                <Route 
-                  path="/auth/login" 
-                  element={
-                    <ProtectedRoute requireAuth={false}>
-                      <LoginPage />
-                    </ProtectedRoute>
-                  } 
-                />
-                
-                <Route 
-                  path="/auth/register" 
-                  element={
-                    <ProtectedRoute requireAuth={false}>
-                      <RegisterPage />
-                    </ProtectedRoute>
-                  } 
-                />
-                
-                <Route 
-                  path="/auth/forgot-password" 
-                  element={
-                    <ProtectedRoute requireAuth={false}>
-                      <ForgotPasswordPage />
-                    </ProtectedRoute>
-                  } 
-                />
+                    {/* Rotas de autenticação (públicas) */}
+                    <Route 
+                      path="/auth/login" 
+                      element={
+                        <ProtectedRoute requireAuth={false}>
+                          <LoginPage />
+                        </ProtectedRoute>
+                      } 
+                    />
+                    
+                    <Route 
+                      path="/auth/register" 
+                      element={
+                        <ProtectedRoute requireAuth={false}>
+                          <RegisterPage />
+                        </ProtectedRoute>
+                      } 
+                    />
+                    
+                    <Route 
+                      path="/auth/forgot-password" 
+                      element={
+                        <ProtectedRoute requireAuth={false}>
+                          <ForgotPasswordPage />
+                        </ProtectedRoute>
+                      } 
+                    />
 
-                {/* Rotas protegidas - Projetos */}
-                <Route 
-                  path="/projects" 
-                  element={
-                    <ProtectedRoute>
-                      <ProjectsPage />
-                    </ProtectedRoute>
-                  } 
-                />
-                
-                {/* Rotas protegidas - Pessoas */}
-                <Route 
-                  path="/projects/:projectId/people" 
-                  element={
-                    <ProtectedRoute>
-                      <PeoplePage />
-                    </ProtectedRoute>
-                  } 
-                />
-                
-                <Route 
-                  path="/projects/:projectId/people/:personId" 
-                  element={
-                    <ProtectedRoute>
-                      <PersonDetailPage />
-                    </ProtectedRoute>
-                  } 
-                />
-                
-                {/* Rotas protegidas - Tarefas (para próxima etapa) */}
-                <Route 
-                  path="/projects/:projectId/tasks" 
-                  element={
-                    <ProtectedRoute>
-                      <ProjectDetailPage />
-                    </ProtectedRoute>
-                  } 
-                />
+                    {/* Rotas protegidas - Dashboard */}
+                    <Route 
+                      path="/dashboard" 
+                      element={
+                        <ProtectedRoute>
+                          <DashboardPage />
+                        </ProtectedRoute>
+                      } 
+                    />
 
-                {/* Rota 404 */}
-                <Route path="*" element={<NotFoundPage />} />
-              </Routes>
-            </main>
+                    {/* Rotas protegidas - Projetos */}
+                    <Route 
+                      path="/projects" 
+                      element={
+                        <ProtectedRoute>
+                          <ProjectsPage />
+                        </ProtectedRoute>
+                      } 
+                    />
+                    
+                    {/* Rotas protegidas - Pessoas */}
+                    <Route 
+                      path="/projects/:projectId/people" 
+                      element={
+                        <ProtectedRoute>
+                          <PeoplePage />
+                        </ProtectedRoute>
+                      } 
+                    />
+                    
+                    <Route 
+                      path="/projects/:projectId/people/:personId" 
+                      element={
+                        <ProtectedRoute>
+                          <PersonDetailPage />
+                        </ProtectedRoute>
+                      } 
+                    />
+                    
+                    {/* Rotas protegidas - Tarefas */}
+                    <Route 
+                      path="/projects/:projectId/tasks" 
+                      element={
+                        <ProtectedRoute>
+                          <TasksPage />
+                        </ProtectedRoute>
+                      } 
+                    />
 
-            {/* Sistema de notificações toast */}
-            <Toaster
-              position="top-right"
-              toastOptions={{
-                duration: parseInt(import.meta.env.VITE_NOTIFICATION_DURATION) || 5000,
-                style: {
-                  background: '#fff',
-                  color: '#374151',
-                  border: '1px solid #e5e7eb',
-                  borderRadius: '0.5rem',
-                  boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)'
-                },
-                success: {
-                  iconTheme: {
-                    primary: '#10b981',
-                    secondary: '#fff'
-                  }
-                },
-                error: {
-                  iconTheme: {
-                    primary: '#ef4444',
-                    secondary: '#fff'
-                  }
-                }
-              }}
-            />
-          </div>
-        </Router>
+                    <Route 
+                      path="/projects/:projectId/tasks/:taskId" 
+                      element={
+                        <ProtectedRoute>
+                          <TaskDetailPage />
+                        </ProtectedRoute>
+                      } 
+                    />
+
+                    {/* Rotas protegidas - Notificações */}
+                    <Route 
+                      path="/notifications" 
+                      element={
+                        <ProtectedRoute>
+                          <NotificationsPage />
+                        </ProtectedRoute>
+                      } 
+                    />
+
+                    {/* Rota 404 */}
+                    <Route path="*" element={<NotFoundPage />} />
+                  </Routes>
+                </main>
+
+                {/* Sistema de notificações toast */}
+                <Toaster
+                  position="top-right"
+                  toastOptions={{
+                    duration: parseInt(import.meta.env.VITE_NOTIFICATION_DURATION) || 5000,
+                    style: {
+                      background: '#fff',
+                      color: '#374151',
+                      border: '1px solid #e5e7eb',
+                      borderRadius: '0.5rem',
+                      boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)'
+                    },
+                    success: {
+                      iconTheme: {
+                        primary: '#10b981',
+                        secondary: '#fff'
+                      }
+                    },
+                    error: {
+                      iconTheme: {
+                        primary: '#ef4444',
+                        secondary: '#fff'
+                      }
+                    }
+                  }}
+                />
+              </div>
+            </Router>
+          </NotificationProvider>
+        </TaskProvider>
       </ProjectProvider>
     </AuthProvider>
   )
@@ -172,7 +208,7 @@ const RootRedirect = () => {
 
   return (
     <Navigate 
-      to={isAuthenticated ? '/projects' : '/auth/login'} 
+      to={isAuthenticated ? '/dashboard' : '/auth/login'} 
       replace 
     />
   )

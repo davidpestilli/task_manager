@@ -1,203 +1,247 @@
-import React, { useState, useRef } from 'react'
+import React, { forwardRef, useImperativeHandle } from 'react'
+import { cn } from '@/utils/helpers'
+import { useDragDrop } from '@/hooks/shared'
+import { DropZone } from './DropZone'
 
 /**
- * Componente para área de drag & drop
+ * Componente de área que suporta drag & drop de tarefas
+ * 
  * @param {Object} props
- * @param {Array} props.items - Lista de itens
- * @param {Function} props.onReorder - Callback quando itens são reordenados
- * @param {Function} props.children - Render function para cada item
- * @param {boolean} props.disabled - Se drag & drop está desabilitado
- * @param {string} props.className - Classes CSS adicionais
+ * @param {Array} props.people - Lista de pessoas
+ * @param {Function} props.onTaskTransfer - Callback para transferir tarefa
+ * @param {Function} props.onTaskShare - Callback para compartilhar tarefa
+ * @param {String} props.projectId - ID do projeto
+ * @param {React.ReactNode} props.children - Conteúdo da área
+ * @param {String} props.className - Classes CSS adicionais
+ * @param {Object} props.dragDropOptions - Opções adicionais para drag & drop
  */
-const DragDropArea = ({
-  items = [],
-  onReorder,
+const DragDropArea = forwardRef(({
+  people = [],
+  onTaskTransfer,
+  onTaskShare,
+  projectId,
   children,
-  disabled = false,
-  className = ''
-}) => {
-  const [draggedIndex, setDraggedIndex] = useState(null)
-  const [dragOverIndex, setDragOverIndex] = useState(null)
-  const dragCounter = useRef(0)
+  className,
+  dragDropOptions = {},
+  ...props
+}, ref) => {
+  const {
+    isDragging,
+    draggedItem,
+    showConfirmModal,
+    pendingTransfer,
+    handleDragStart,
+    handleDragOver,
+    handleDragLeave,
+    handleDrop,
+    handleDragEnd,
+    confirmTransfer,
+    confirmShare,
+    cancelTransfer,
+    getDropZoneFeedback,
+    isValidDropTarget,
+    dragPreviewRef
+  } = useDragDrop({
+    people,
+    onTaskTransfer,
+    onTaskShare,
+    projectId,
+    ...dragDropOptions
+  })
 
-  // Handler para início do drag
-  const handleDragStart = (e, index) => {
-    if (disabled) return
-    
-    setDraggedIndex(index)
-    e.dataTransfer.effectAllowed = 'move'
-    e.dataTransfer.setData('text/html', e.target.outerHTML)
+  // Expor métodos para componente pai
+  useImperativeHandle(ref, () => ({
+    isDragging,
+    draggedItem,
+    startDrag: handleDragStart,
+    endDrag: handleDragEnd
+  }), [isDragging, draggedItem, handleDragStart, handleDragEnd])
+
+  /**
+   * Renderiza as pessoas com zonas de drop
+   */
+  const renderPeopleWithDropZones = () => {
+    if (!people?.length) return null
+
+    return people.map(person => (
+      <DropZone
+        key={person.id}
+        personId={person.id}
+        person={person}
+        isDragging={isDragging}
+        draggedItem={draggedItem}
+        feedback={getDropZoneFeedback(person.id)}
+        isValidTarget={isValidDropTarget(person.id)}
+        onDragOver={(e) => handleDragOver(e, person.id)}
+        onDragLeave={(e) => handleDragLeave(e, person.id)}
+        onDrop={(e) => handleDrop(e, person.id)}
+      >
+        {/* O conteúdo será renderizado pelo componente pai */}
+        {children?.({ person, isDragging, draggedItem })}
+      </DropZone>
+    ))
   }
 
-  // Handler para drag over
-  const handleDragOver = (e, index) => {
-    if (disabled || draggedIndex === null) return
-    
-    e.preventDefault()
-    e.dataTransfer.dropEffect = 'move'
-    
-    if (index !== dragOverIndex) {
-      setDragOverIndex(index)
-    }
-  }
+  /**
+   * Modal de confirmação para transferência
+   */
+  const renderConfirmationModal = () => {
+    if (!showConfirmModal || !pendingTransfer) return null
 
-  // Handler para drag enter
-  const handleDragEnter = (e, index) => {
-    if (disabled) return
-    
-    dragCounter.current++
-    setDragOverIndex(index)
-  }
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="bg-white rounded-xl p-6 max-w-md w-full mx-4 shadow-2xl">
+          {/* Header */}
+          <div className="mb-4">
+            <h3 className="text-lg font-semibold text-gray-900">
+              Mover Tarefa
+            </h3>
+            <p className="text-sm text-gray-600 mt-1">
+              Como você gostaria de proceder com esta tarefa?
+            </p>
+          </div>
 
-  // Handler para drag leave
-  const handleDragLeave = (e) => {
-    if (disabled) return
-    
-    dragCounter.current--
-    
-    if (dragCounter.current === 0) {
-      setDragOverIndex(null)
-    }
-  }
+          {/* Informações da tarefa */}
+          <div className="bg-gray-50 rounded-lg p-4 mb-6">
+            <div className="flex items-start space-x-3">
+              <div className="flex-shrink-0">
+                <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                  <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012-2" />
+                  </svg>
+                </div>
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="font-medium text-gray-900 truncate">
+                  {pendingTransfer.task.name}
+                </p>
+                <div className="mt-2 space-y-1">
+                  <div className="flex items-center text-sm text-gray-600">
+                    <span className="font-medium">De:</span>
+                    <span className="ml-1">{pendingTransfer.sourcePerson.full_name}</span>
+                  </div>
+                  <div className="flex items-center text-sm text-gray-600">
+                    <span className="font-medium">Para:</span>
+                    <span className="ml-1">{pendingTransfer.targetPerson.full_name}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
 
-  // Handler para drop
-  const handleDrop = (e, dropIndex) => {
-    if (disabled || draggedIndex === null) return
-    
-    e.preventDefault()
-    
-    if (draggedIndex !== dropIndex) {
-      // Criar nova ordem dos itens
-      const newItems = [...items]
-      const draggedItem = newItems[draggedIndex]
-      
-      // Remover item da posição original
-      newItems.splice(draggedIndex, 1)
-      
-      // Inserir item na nova posição
-      newItems.splice(dropIndex, 0, draggedItem)
-      
-      // Chamar callback com nova ordem
-      const newItemIds = newItems.map(item => item.id)
-      onReorder?.(newItemIds)
-    }
-    
-    // Reset do estado
-    setDraggedIndex(null)
-    setDragOverIndex(null)
-    dragCounter.current = 0
-  }
+          {/* Opções */}
+          <div className="space-y-3 mb-6">
+            <div>
+              <h4 className="font-medium text-gray-900 mb-2">Escolha uma opção:</h4>
+              <div className="space-y-2">
+                <button
+                  onClick={confirmTransfer}
+                  className="w-full text-left p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <div className="font-medium text-gray-900">Transferir</div>
+                  <div className="text-sm text-gray-600">
+                    Remove a tarefa de {pendingTransfer.sourcePerson.full_name} e atribui para {pendingTransfer.targetPerson.full_name}
+                  </div>
+                </button>
+                
+                <button
+                  onClick={confirmShare}
+                  className="w-full text-left p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <div className="font-medium text-gray-900">Compartilhar</div>
+                  <div className="text-sm text-gray-600">
+                    Mantém a tarefa com {pendingTransfer.sourcePerson.full_name} e também atribui para {pendingTransfer.targetPerson.full_name}
+                  </div>
+                </button>
+              </div>
+            </div>
+          </div>
 
-  // Handler para fim do drag
-  const handleDragEnd = () => {
-    setDraggedIndex(null)
-    setDragOverIndex(null)
-    dragCounter.current = 0
+          {/* Ações */}
+          <div className="flex space-x-3">
+            <button
+              onClick={cancelTransfer}
+              className="flex-1 px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors font-medium"
+            >
+              Cancelar
+            </button>
+          </div>
+        </div>
+      </div>
+    )
   }
 
   return (
-    <div className={className}>
-      {items.map((item, index) => {
-        const isDragging = draggedIndex === index
-        const isDragOver = dragOverIndex === index && draggedIndex !== index
-        
-        // Props para o handle de drag
-        const dragHandleProps = disabled ? null : {
-          draggable: true,
-          onDragStart: (e) => handleDragStart(e, index),
-          onDragEnd: handleDragEnd
-        }
-
-        // Props para a área de drop
-        const dropAreaProps = disabled ? {} : {
-          onDragOver: (e) => handleDragOver(e, index),
-          onDragEnter: (e) => handleDragEnter(e, index),
-          onDragLeave: handleDragLeave,
-          onDrop: (e) => handleDrop(e, index)
-        }
-
-        return (
-          <div
-            key={item.id}
-            className={`
-              transition-all duration-200
-              ${isDragging ? 'opacity-50 scale-95' : ''}
-              ${isDragOver ? 'transform translate-y-1' : ''}
-            `}
-            {...dropAreaProps}
-          >
-            {/* Indicador de drop zone */}
-            {isDragOver && (
-              <div className="h-1 bg-blue-500 rounded-full mb-2 animate-pulse" />
-            )}
-            
-            {/* Renderizar item usando children function */}
-            {children(item, dragHandleProps)}
+    <div 
+      className={cn(
+        'drag-drop-area relative',
+        {
+          'drag-active': isDragging,
+          'pointer-events-none': isDragging
+        },
+        className
+      )}
+      {...props}
+    >
+      {/* Preview invisível para drag */}
+      <div
+        ref={dragPreviewRef}
+        className="drag-preview-template absolute opacity-0 pointer-events-none -top-96"
+        style={{ left: '-9999px' }}
+      >
+        {draggedItem && (
+          <div className="bg-white border border-gray-200 rounded-lg p-3 shadow-lg max-w-xs">
+            <div className="font-medium text-gray-900 truncate">
+              {draggedItem.task.name}
+            </div>
+            <div className="text-sm text-gray-600 mt-1">
+              Movendo tarefa...
+            </div>
           </div>
-        )
-      })}
+        )}
+      </div>
+
+      {/* Conteúdo principal */}
+      <div className="drag-drop-content">
+        {typeof children === 'function' ? (
+          renderPeopleWithDropZones()
+        ) : (
+          children
+        )}
+      </div>
+
+      {/* Overlay durante drag */}
+      {isDragging && (
+        <div className="absolute inset-0 bg-blue-50 bg-opacity-30 pointer-events-none z-10 rounded-lg">
+          <div className="absolute top-4 left-4 bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
+            Arraste para uma pessoa
+          </div>
+        </div>
+      )}
+
+      {/* Modal de confirmação */}
+      {renderConfirmationModal()}
+
+      {/* Estilos CSS específicos */}
+      <style jsx>{`
+        .drag-drop-area.drag-active .drag-drop-content > * {
+          transition: transform 0.2s ease, opacity 0.2s ease;
+        }
+        
+        .drag-drop-area.drag-active .drag-drop-content > *:not(.drop-zone-active) {
+          opacity: 0.6;
+          transform: scale(0.98);
+        }
+        
+        .drag-drop-area .drop-zone-active {
+          transform: scale(1.02);
+          z-index: 20;
+        }
+      `}</style>
     </div>
   )
-}
+})
 
-/**
- * Componente simples para handle de drag
- */
-export const DragHandle = ({ className = '', ...props }) => (
-  <div
-    className={`
-      cursor-move text-gray-400 hover:text-gray-600 
-      select-none touch-none
-      ${className}
-    `}
-    {...props}
-  >
-    <svg 
-      width="16" 
-      height="16" 
-      viewBox="0 0 16 16" 
-      fill="currentColor"
-      className="pointer-events-none"
-    >
-      <circle cx="4" cy="4" r="1" />
-      <circle cx="4" cy="8" r="1" />
-      <circle cx="4" cy="12" r="1" />
-      <circle cx="8" cy="4" r="1" />
-      <circle cx="8" cy="8" r="1" />
-      <circle cx="8" cy="12" r="1" />
-      <circle cx="12" cy="4" r="1" />
-      <circle cx="12" cy="8" r="1" />
-      <circle cx="12" cy="12" r="1" />
-    </svg>
-  </div>
-)
+DragDropArea.displayName = 'DragDropArea'
 
-/**
- * Hook para gerenciar estado de drag & drop
- */
-export const useDragDrop = (initialItems = []) => {
-  const [items, setItems] = useState(initialItems)
-  const [isDragging, setIsDragging] = useState(false)
-
-  const reorderItems = (newItemIds) => {
-    const reorderedItems = newItemIds.map(id => 
-      items.find(item => item.id === id)
-    ).filter(Boolean)
-    
-    setItems(reorderedItems)
-  }
-
-  const updateItems = (newItems) => {
-    setItems(newItems)
-  }
-
-  return {
-    items,
-    isDragging,
-    reorderItems,
-    updateItems,
-    setIsDragging
-  }
-}
-
-export default DragDropArea
+export { DragDropArea }

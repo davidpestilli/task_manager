@@ -1,48 +1,18 @@
-// index.js/**
- /* Exports centralizados dos componentes compartilhados
- * 
- * Permite importação fácil de todos os componentes
- * compartilhados do sistema
- */
+// Componentes de tarefas
+export { TaskCard } from './TaskCard'
+export { TaskList } from './TaskList'
+export { TaskModal } from './TaskModal'
+export { CreateTaskModal } from './CreateTaskModal'
+export { TaskSteps } from './TaskSteps'
+export { TaskComments } from './TaskComments'
+export { TaskHistory } from './TaskHistory'
+export { DependencyFlow } from './DependencyFlow'
+export { DependencySelector } from './DependencySelector'
+export { FlowChart } from './FlowChart'
+export { TaskFilters } from './TaskFilters'
+export { TaskStatusBadge } from './TaskStatusBadge'
 
-// Layout components
-export * from './layout'
-
-// Navigation components  
-export * from './navigation'
-
-// UI components
-export * from './ui'
-
-// Re-exports específicos para facilitar importação
-export {
-  Layout,
-  AuthLayout,
-  SettingsLayout,
-  ProjectLayout,
-  Header,
-  Sidebar,
-  Footer
-} from './layout'
-
-export {
-  Breadcrumb,
-  NavTabs,
-  BackButton,
-  ProjectBreadcrumb,
-  ProjectNavTabs,
-  SmartBackButton
-} from './navigation'
-
-export {
-  Button,
-  Input,
-  Card,
-  Spinner,
-  Modal,
-  Badge,
-  Dropdown,
-  Tooltip,
-  Avatar,
-  Skeleton
-} from './ui'
+// Componentes de Drag & Drop
+export { DragDropArea } from './DragDropArea'
+export { DragPreview } from './DragPreview'
+export { DropZone } from './DropZone'
