@@ -1,1 +1,572 @@
-// utilities.css
+/**
+ * Classes utilitárias customizadas
+ * 
+ * Este arquivo contém classes utilitárias que complementam o Tailwind CSS
+ * com funcionalidades específicas da aplicação.
+ */
+
+/* ==========================================================================
+   Utilitários de Layout
+   ========================================================================== */
+
+/* Container com largura limitada */
+.container-narrow {
+  @apply max-w-4xl mx-auto px-4;
+}
+
+.container-wide {
+  @apply max-w-7xl mx-auto px-4;
+}
+
+/* Grid responsivo automático */
+.grid-auto-fit {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+.grid-auto-fill {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+/* Layouts com sidebar */
+.layout-sidebar {
+  @apply grid grid-cols-1 lg:grid-cols-4 gap-6;
+}
+
+.layout-sidebar-content {
+  @apply lg:col-span-3;
+}
+
+.layout-sidebar-aside {
+  @apply lg:col-span-1;
+}
+
+/* ==========================================================================
+   Utilitários de Espaçamento
+   ========================================================================== */
+
+/* Espaçamento vertical entre elementos filhos */
+.space-y-section > * + * {
+  margin-top: 3rem;
+}
+
+.space-y-component > * + * {
+  margin-top: 1.5rem;
+}
+
+.space-y-element > * + * {
+  margin-top: 0.75rem;
+}
+
+/* Padding responsivo */
+.padding-responsive {
+  @apply p-4 sm:p-6 lg:p-8;
+}
+
+.padding-section {
+  @apply py-12 sm:py-16 lg:py-20;
+}
+
+/* ==========================================================================
+   Utilitários de Tipografia
+   ========================================================================== */
+
+/* Tamanhos de texto responsivos */
+.text-hero {
+  @apply text-3xl sm:text-4xl lg:text-5xl xl:text-6xl;
+  @apply font-bold leading-tight;
+}
+
+.text-display {
+  @apply text-2xl sm:text-3xl lg:text-4xl;
+  @apply font-semibold leading-tight;
+}
+
+.text-title {
+  @apply text-xl sm:text-2xl;
+  @apply font-semibold;
+}
+
+.text-subtitle {
+  @apply text-lg sm:text-xl;
+  @apply font-medium text-gray-600;
+}
+
+.text-body-large {
+  @apply text-lg leading-relaxed text-gray-700;
+}
+
+.text-body {
+  @apply text-base leading-relaxed text-gray-600;
+}
+
+.text-caption {
+  @apply text-sm text-gray-500;
+}
+
+.text-micro {
+  @apply text-xs text-gray-400;
+}
+
+/* Truncate com tooltip */
+.truncate-tooltip {
+  @apply truncate cursor-help;
+}
+
+/* Text gradient */
+.text-gradient {
+  @apply bg-gradient-to-r from-primary-600 to-purple-600;
+  @apply bg-clip-text text-transparent;
+}
+
+/* ==========================================================================
+   Utilitários de Background
+   ========================================================================== */
+
+/* Backgrounds com gradiente */
+.bg-gradient-primary {
+  @apply bg-gradient-to-r from-primary-500 to-primary-600;
+}
+
+.bg-gradient-secondary {
+  @apply bg-gradient-to-r from-purple-500 to-pink-500;
+}
+
+.bg-gradient-success {
+  @apply bg-gradient-to-r from-green-500 to-emerald-500;
+}
+
+.bg-gradient-warning {
+  @apply bg-gradient-to-r from-amber-500 to-orange-500;
+}
+
+.bg-gradient-danger {
+  @apply bg-gradient-to-r from-red-500 to-rose-500;
+}
+
+/* Background patterns */
+.bg-pattern-dots {
+  background-image: radial-gradient(circle, #e5e7eb 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+.bg-pattern-grid {
+  background-image: linear-gradient(#e5e7eb 1px, transparent 1px),
+    linear-gradient(90deg, #e5e7eb 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+/* Glass effect */
+.glass {
+  @apply backdrop-blur-sm bg-white/75 border border-white/20;
+}
+
+.glass-dark {
+  @apply backdrop-blur-sm bg-gray-900/75 border border-gray-700/20;
+}
+
+/* ==========================================================================
+   Utilitários de Border
+   ========================================================================== */
+
+/* Borders coloridas */
+.border-primary {
+  @apply border-primary-200;
+}
+
+.border-success {
+  @apply border-green-200;
+}
+
+.border-warning {
+  @apply border-amber-200;
+}
+
+.border-danger {
+  @apply border-red-200;
+}
+
+/* Border gradiente */
+.border-gradient {
+  @apply border-2 border-transparent;
+  background: linear-gradient(white, white) padding-box,
+    linear-gradient(45deg, theme('colors.blue.500'), theme('colors.purple.500')) border-box;
+}
+/* ==========================================================================
+   Utilitários de Shadow
+   ========================================================================== */
+
+/* Shadows customizadas */
+.shadow-glow {
+  box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+}
+
+.shadow-glow-success {
+  box-shadow: 0 0 20px rgba(16, 185, 129, 0.3);
+}
+
+.shadow-glow-warning {
+  box-shadow: 0 0 20px rgba(245, 158, 11, 0.3);
+}
+
+.shadow-glow-danger {
+  box-shadow: 0 0 20px rgba(239, 68, 68, 0.3);
+}
+
+.shadow-inner-primary {
+  box-shadow: inset 0 2px 4px 0 rgba(59, 130, 246, 0.06);
+}
+
+/* ==========================================================================
+   Utilitários de Animação
+   ========================================================================== */
+
+/* Animações de entrada */
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-out forwards;
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.3s ease-out forwards;
+}
+
+.animate-fade-in-down {
+  animation: fadeInDown 0.3s ease-out forwards;
+}
+
+.animate-slide-up {
+  animation: slideUp 0.3s ease-out forwards;
+}
+
+.animate-slide-down {
+  animation: slideDown 0.3s ease-out forwards;
+}
+
+.animate-scale-in {
+  animation: scaleIn 0.2s ease-out forwards;
+}
+
+.animate-bounce-in {
+  animation: bounceIn 0.6s ease-out forwards;
+}
+
+/* Delays para animações em cascata */
+.animate-delay-75 {
+  animation-delay: 75ms;
+}
+
+.animate-delay-100 {
+  animation-delay: 100ms;
+}
+
+.animate-delay-150 {
+  animation-delay: 150ms;
+}
+
+.animate-delay-200 {
+  animation-delay: 200ms;
+}
+
+.animate-delay-300 {
+  animation-delay: 300ms;
+}
+
+/* Hover animations */
+.hover-lift {
+  @apply transition-transform duration-200 ease-out;
+}
+
+.hover-lift:hover {
+  @apply -translate-y-1;
+}
+
+.hover-scale {
+  @apply transition-transform duration-200 ease-out;
+}
+
+.hover-scale:hover {
+  @apply scale-105;
+}
+
+.hover-glow {
+  @apply transition-shadow duration-200 ease-out;
+}
+
+.hover-glow:hover {
+  @apply shadow-glow;
+}
+
+/* ==========================================================================
+   Utilitários de Estado
+   ========================================================================== */
+
+/* Estados de loading */
+.loading {
+  @apply pointer-events-none opacity-75;
+}
+
+.loading::after {
+  content: '';
+  @apply absolute inset-0 bg-white/50 flex items-center justify-center;
+}
+
+/* Estados de erro */
+.error-state {
+  @apply border-red-300 bg-red-50 text-red-700;
+}
+
+.error-state:focus {
+  @apply ring-red-500 border-red-500;
+}
+
+/* Estados de sucesso */
+.success-state {
+  @apply border-green-300 bg-green-50 text-green-700;
+}
+
+.success-state:focus {
+  @apply ring-green-500 border-green-500;
+}
+
+/* Estado disabled customizado */
+.disabled-custom {
+  @apply opacity-50 cursor-not-allowed select-none;
+  @apply pointer-events-none grayscale;
+}
+
+/* ==========================================================================
+   Utilitários de Scroll
+   ========================================================================== */
+
+/* Scroll suave */
+.scroll-smooth {
+  scroll-behavior: smooth;
+}
+
+/* Hide scrollbar mas manter funcionalidade */
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Custom scrollbar */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: theme('colors.gray.100');
+  border-radius: 3px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: theme('colors.gray.300');
+  border-radius: 3px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: theme('colors.gray.400');
+}
+
+/* ==========================================================================
+   Utilitários de Interação
+   ========================================================================== */
+
+/* Estados de focus melhorados */
+.focus-ring {
+  @apply focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2;
+}
+
+.focus-ring-inset {
+  @apply focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-inset;
+}
+
+/* Hover states */
+.hover-primary {
+  @apply hover:text-primary-600 hover:bg-primary-50;
+}
+
+.hover-secondary {
+  @apply hover:text-gray-900 hover:bg-gray-100;
+}
+
+/* Active states */
+.active-primary {
+  @apply text-primary-600 bg-primary-50 border-primary-200;
+}
+
+.active-secondary {
+  @apply text-gray-900 bg-gray-100 border-gray-300;
+}
+
+/* ==========================================================================
+   Utilitários de Aspect Ratio
+   ========================================================================== */
+
+.aspect-square {
+  aspect-ratio: 1 / 1;
+}
+
+.aspect-video {
+  aspect-ratio: 16 / 9;
+}
+
+.aspect-photo {
+  aspect-ratio: 4 / 3;
+}
+
+.aspect-portrait {
+  aspect-ratio: 3 / 4;
+}
+
+/* ==========================================================================
+   Utilitários de Posicionamento
+   ========================================================================== */
+
+/* Center absolute */
+.center-absolute {
+  @apply absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2;
+}
+
+/* Sticky header com offset */
+.sticky-header {
+  @apply sticky top-0 z-40 bg-white border-b border-gray-200;
+}
+
+/* Full viewport height minus header */
+.min-h-screen-minus-header {
+  min-height: calc(100vh - 4rem);
+}
+
+/* ==========================================================================
+   Utilitários de Print
+   ========================================================================== */
+
+.print-hidden {
+  @media print {
+    display: none !important;
+  }
+}
+
+.print-only {
+  display: none;
+}
+
+@media print {
+  .print-only {
+    display: block !important;
+  }
+}
+
+/* ==========================================================================
+   Utilitários Responsivos Customizados
+   ========================================================================== */
+
+/* Mobile first breakpoints */
+.mobile-only {
+  @apply block sm:hidden;
+}
+
+.tablet-up {
+  @apply hidden sm:block;
+}
+
+.desktop-up {
+  @apply hidden lg:block;
+}
+
+/* Container queries support */
+@supports (container-type: inline-size) {
+  .container-query {
+    container-type: inline-size;
+  }
+}
+
+/* ==========================================================================
+   Keyframes para Animações
+   ========================================================================== */
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideDown {
+  from {
+    transform: translateY(-100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes bounceIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+  70% {
+    transform: scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}

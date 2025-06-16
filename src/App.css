@@ -1,42 +1,356 @@
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+/**
+ * Estilos específicos do componente App
+ * 
+ * Este arquivo contém estilos que se aplicam especificamente ao componente
+ * raiz da aplicação e sua estrutura de layout principal.
+ */
+
+/* ==========================================================================
+   Layout Principal da Aplicação
+   ========================================================================== */
+
+.App {
+  @apply min-h-screen bg-gray-50;
+  @apply text-gray-900 antialiased;
+  /* Definir variáveis CSS customizadas para a aplicação */
+  --app-header-height: 4rem;
+  --app-sidebar-width: 15rem;
+  --app-sidebar-collapsed-width: 4rem;
+  --app-footer-height: 3rem;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+/* Container principal */
+.App main {
+  @apply flex-1;
+  min-height: calc(100vh - var(--app-header-height));
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
+/* ==========================================================================
+   Estados de Loading da Aplicação
+   ========================================================================== */
+
+/* Loading inicial da aplicação */
+.app-loading {
+  @apply min-h-screen flex items-center justify-center;
+  @apply bg-gradient-to-br from-primary-50 to-purple-50;
+}
+
+.app-loading-content {
+  @apply text-center space-y-4;
+}
+
+.app-loading-spinner {
+  @apply w-12 h-12 mx-auto;
+  @apply border-4 border-primary-200 border-t-primary-600;
+  @apply rounded-full animate-spin;
+}
+
+.app-loading-text {
+  @apply text-lg font-medium text-gray-600;
+}
+
+.app-loading-subtext {
+  @apply text-sm text-gray-500;
+}
+
+/* ==========================================================================
+   Estados de Erro da Aplicação
+   ========================================================================== */
+
+/* Erro geral da aplicação */
+.app-error {
+  @apply min-h-screen flex items-center justify-center;
+  @apply bg-gray-50 px-4;
+}
+
+.app-error-content {
+  @apply max-w-md w-full text-center;
+  @apply bg-white rounded-xl shadow-soft p-8;
+}
+
+.app-error-icon {
+  @apply w-16 h-16 mx-auto mb-4;
+  @apply text-red-500;
+}
+
+.app-error-title {
+  @apply text-xl font-semibold text-gray-900 mb-2;
+}
+
+.app-error-message {
+  @apply text-gray-600 mb-6;
+}
+
+.app-error-actions {
+  @apply space-x-3;
+}
+
+/* ==========================================================================
+   Layout Responsivo
+   ========================================================================== */
+
+/* Layout para diferentes breakpoints */
+@media (max-width: 768px) {
+  .App {
+    --app-sidebar-width: 100%;
+    --app-sidebar-collapsed-width: 0;
   }
-  to {
-    transform: rotate(360deg);
+}
+
+/* Adaptações para tablet */
+@media (min-width: 768px) and (max-width: 1024px) {
+  .App {
+    --app-sidebar-width: 12rem;
   }
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
+/* Layout desktop */
+@media (min-width: 1024px) {
+  .App {
+    --app-sidebar-width: 15rem;
   }
 }
 
-.card {
-  padding: 2em;
+/* ==========================================================================
+   Estados de Conectividade
+   ========================================================================== */
+
+/* Indicador de status offline */
+.app-offline-indicator {
+  @apply fixed top-0 left-0 right-0 z-50;
+  @apply bg-amber-500 text-white text-center py-2 text-sm;
+  @apply animate-slide-down;
 }
 
-.read-the-docs {
-  color: #888;
+.app-offline-indicator.hidden {
+  @apply animate-fade-out;
+}
+
+/* ==========================================================================
+   Splash Screen (PWA)
+   ========================================================================== */
+
+.app-splash {
+  @apply fixed inset-0 z-50;
+  @apply bg-gradient-to-br from-primary-600 to-purple-600;
+  @apply flex items-center justify-center;
+}
+
+.app-splash-content {
+  @apply text-center text-white;
+}
+
+.app-splash-logo {
+  @apply w-24 h-24 mx-auto mb-6;
+  @apply animate-bounce-in;
+}
+
+.app-splash-title {
+  @apply text-3xl font-bold mb-2;
+  @apply animate-fade-in animate-delay-200;
+}
+
+.app-splash-subtitle {
+  @apply text-lg opacity-90;
+  @apply animate-fade-in animate-delay-300;
+}
+
+.app-splash-loader {
+  @apply mt-8;
+  @apply animate-fade-in animate-delay-500;
+}
+
+/* ==========================================================================
+   Transições de Rota
+   ========================================================================== */
+
+/* Container para transições de página */
+.route-transition-container {
+  @apply relative overflow-hidden;
+}
+
+/* Animações de entrada/saída de rota */
+.route-enter {
+  @apply opacity-0 transform translate-x-4;
+}
+
+.route-enter-active {
+  @apply opacity-100 transform translate-x-0;
+  @apply transition-all duration-300 ease-out;
+}
+
+.route-exit {
+  @apply opacity-100 transform translate-x-0;
+}
+
+.route-exit-active {
+  @apply opacity-0 transform -translate-x-4;
+  @apply transition-all duration-300 ease-out;
+}
+
+/* ==========================================================================
+   Scrollbar Customizada da Aplicação
+   ========================================================================== */
+
+.App ::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.App ::-webkit-scrollbar-track {
+  background: theme('colors.gray.100');
+  border-radius: 4px;
+}
+
+.App ::-webkit-scrollbar-thumb {
+  background: theme('colors.gray.300');
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
+
+.App ::-webkit-scrollbar-thumb:hover {
+  background: theme('colors.gray.400');
+}
+
+/* Firefox */
+.App {
+  scrollbar-width: thin;
+  scrollbar-color: theme('colors.gray.300') theme('colors.gray.100');
+}
+
+/* ==========================================================================
+   Configurações de Tema
+   ========================================================================== */
+
+/* Variáveis de tema claro (padrão) */
+.App.theme-light {
+  --bg-primary: theme('colors.white');
+  --bg-secondary: theme('colors.gray.50');
+  --bg-tertiary: theme('colors.gray.100');
+  --text-primary: theme('colors.gray.900');
+  --text-secondary: theme('colors.gray.600');
+  --text-tertiary: theme('colors.gray.400');
+  --border-primary: theme('colors.gray.200');
+  --border-secondary: theme('colors.gray.300');
+}
+
+/* Variáveis de tema escuro */
+.App.theme-dark {
+  --bg-primary: theme('colors.gray.900');
+  --bg-secondary: theme('colors.gray.800');
+  --bg-tertiary: theme('colors.gray.700');
+  --text-primary: theme('colors.gray.100');
+  --text-secondary: theme('colors.gray.300');
+  --text-tertiary: theme('colors.gray.500');
+  --border-primary: theme('colors.gray.700');
+  --border-secondary: theme('colors.gray.600');
+  
+  @apply bg-gray-900 text-gray-100;
+}
+
+/* ==========================================================================
+   Print Styles Específicos da Aplicação
+   ========================================================================== */
+
+@media print {
+  .App {
+    @apply text-black bg-white;
+    font-size: 12pt;
+    line-height: 1.4;
+  }
+  
+  .app-no-print {
+    display: none !important;
+  }
+  
+  .app-print-only {
+    display: block !important;
+  }
+  
+  /* Forçar quebra de página */
+  .app-page-break {
+    page-break-before: always;
+  }
+  
+  .app-no-page-break {
+    page-break-inside: avoid;
+  }
+}
+
+/* ==========================================================================
+   Accessibility Enhancements
+   ========================================================================== */
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  .App {
+    --border-primary: theme('colors.black');
+    --border-secondary: theme('colors.black');
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .App *,
+  .App *::before,
+  .App *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Focus management */
+.App:focus-within {
+  /* Estilos quando a aplicação tem foco */
+}
+
+/* ==========================================================================
+   Performance Optimizations
+   ========================================================================== */
+
+/* GPU acceleration para elementos que animam frequentemente */
+.App .gpu-layer {
+  transform: translateZ(0);
+  will-change: transform;
+}
+
+/* Otimização de repaint */
+.App .optimize-repaint {
+  contain: layout style paint;
+}
+
+/* ==========================================================================
+   Custom Properties para Componentes
+   ========================================================================== */
+
+.App {
+  /* Propriedades customizadas para componentes filhos */
+  --card-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  --card-shadow-hover: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --input-border-radius: 0.5rem;
+  --button-border-radius: 0.5rem;
+  --modal-border-radius: 0.75rem;
+  
+  /* Timing functions */
+  --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+  --ease-in-out-circ: cubic-bezier(0.85, 0, 0.15, 1);
+}
+
+/* ==========================================================================
+   Environment Specific Styles
+   ========================================================================== */
+
+/* Development mode indicator */
+.App.env-development::before {
+  content: 'DEV';
+  @apply fixed top-2 right-2 z-50;
+  @apply bg-red-500 text-white text-xs px-2 py-1 rounded;
+  @apply font-mono uppercase tracking-wide;
+}
+
+/* Production optimizations */
+.App.env-production {
+  /* Estilos específicos para produção */
 }

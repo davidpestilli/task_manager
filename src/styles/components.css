@@ -1,1 +1,578 @@
-// components.css
+/**
+ * Estilos de componentes reutilizáveis
+ * 
+ * Este arquivo contém classes CSS para componentes que são reutilizados
+ * em toda a aplicação, seguindo padrões de design consistentes.
+ */
+
+/* ==========================================================================
+   Componentes de Botão
+   ========================================================================== */
+
+.btn {
+  @apply inline-flex items-center justify-center;
+  @apply px-4 py-2 text-sm font-medium;
+  @apply rounded-lg border;
+  @apply transition-all duration-200;
+  @apply focus:outline-none focus:ring-2 focus:ring-offset-2;
+  @apply disabled:opacity-50 disabled:cursor-not-allowed;
+}
+
+.btn-primary {
+  @apply bg-primary-600 border-primary-600 text-white;
+  @apply hover:bg-primary-700 hover:border-primary-700;
+  @apply focus:ring-primary-500;
+}
+
+.btn-secondary {
+  @apply bg-white border-gray-300 text-gray-700;
+  @apply hover:bg-gray-50 hover:border-gray-400;
+  @apply focus:ring-primary-500;
+}
+
+.btn-success {
+  @apply bg-green-600 border-green-600 text-white;
+  @apply hover:bg-green-700 hover:border-green-700;
+  @apply focus:ring-green-500;
+}
+
+.btn-warning {
+  @apply bg-amber-600 border-amber-600 text-white;
+  @apply hover:bg-amber-700 hover:border-amber-700;
+  @apply focus:ring-amber-500;
+}
+
+.btn-danger {
+  @apply bg-red-600 border-red-600 text-white;
+  @apply hover:bg-red-700 hover:border-red-700;
+  @apply focus:ring-red-500;
+}
+
+.btn-ghost {
+  @apply bg-transparent border-transparent text-gray-600;
+  @apply hover:bg-gray-100 hover:text-gray-900;
+  @apply focus:ring-primary-500;
+}
+
+.btn-link {
+  @apply bg-transparent border-transparent text-primary-600;
+  @apply hover:text-primary-700 hover:underline;
+  @apply focus:ring-primary-500;
+  @apply p-0;
+}
+
+/* Tamanhos de botão */
+.btn-xs {
+  @apply px-2 py-1 text-xs;
+}
+
+.btn-sm {
+  @apply px-3 py-1.5 text-sm;
+}
+
+.btn-lg {
+  @apply px-6 py-3 text-base;
+}
+
+.btn-xl {
+  @apply px-8 py-4 text-lg;
+}
+
+/* Estados especiais */
+.btn-loading {
+  @apply cursor-wait opacity-75;
+}
+
+.btn-icon-only {
+  @apply p-2;
+}
+
+/* ==========================================================================
+   Componentes de Input
+   ========================================================================== */
+
+.form-input {
+  @apply block w-full px-3 py-2;
+  @apply text-gray-900 placeholder-gray-500;
+  @apply bg-white border border-gray-300 rounded-lg;
+  @apply focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500;
+  @apply disabled:bg-gray-50 disabled:text-gray-500 disabled:cursor-not-allowed;
+  @apply transition-colors duration-200;
+}
+
+.form-input-error {
+  @apply border-red-300 focus:ring-red-500 focus:border-red-500;
+}
+
+.form-input-success {
+  @apply border-green-300 focus:ring-green-500 focus:border-green-500;
+}
+
+.form-textarea {
+  @apply form-input;
+  @apply resize-vertical;
+  @apply min-h-[80px];
+}
+
+.form-select {
+  @apply form-input;
+  @apply pr-10 bg-no-repeat bg-right;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+  background-position: right 0.75rem center;
+  background-size: 1.25rem 1.25rem;
+}
+
+.form-checkbox {
+  @apply h-4 w-4 text-primary-600 border-gray-300 rounded;
+  @apply focus:ring-primary-500 focus:ring-offset-0;
+}
+
+.form-radio {
+  @apply h-4 w-4 text-primary-600 border-gray-300;
+  @apply focus:ring-primary-500 focus:ring-offset-0;
+}
+
+/* ==========================================================================
+   Componentes de Card
+   ========================================================================== */
+
+.card {
+  @apply bg-white rounded-xl border border-gray-200;
+  @apply shadow-soft;
+  @apply overflow-hidden;
+}
+
+.card-hover {
+  @apply transition-all duration-200;
+  @apply hover:shadow-medium hover:-translate-y-0.5;
+}
+
+.card-header {
+  @apply px-6 py-4 border-b border-gray-200;
+  @apply bg-gray-50;
+}
+
+.card-body {
+  @apply px-6 py-4;
+}
+
+.card-footer {
+  @apply px-6 py-4 border-t border-gray-200;
+  @apply bg-gray-50;
+}
+
+.card-compact {
+  @apply p-4;
+}
+
+.card-lg {
+  @apply p-8;
+}
+
+/* ==========================================================================
+   Componentes de Badge
+   ========================================================================== */
+
+.badge {
+  @apply inline-flex items-center px-2.5 py-0.5;
+  @apply text-xs font-medium rounded-full;
+}
+
+.badge-primary {
+  @apply bg-primary-100 text-primary-800;
+}
+
+.badge-secondary {
+  @apply bg-gray-100 text-gray-800;
+}
+
+.badge-success {
+  @apply bg-green-100 text-green-800;
+}
+
+.badge-warning {
+  @apply bg-amber-100 text-amber-800;
+}
+
+.badge-danger {
+  @apply bg-red-100 text-red-800;
+}
+
+.badge-info {
+  @apply bg-blue-100 text-blue-800;
+}
+
+/* Tamanhos de badge */
+.badge-sm {
+  @apply px-2 py-0.5 text-xs;
+}
+
+.badge-lg {
+  @apply px-3 py-1 text-sm;
+}
+
+/* Badge com ícone */
+.badge-with-icon {
+  @apply pl-1.5;
+}
+
+.badge-with-icon svg {
+  @apply w-3 h-3 mr-1;
+}
+
+/* ==========================================================================
+   Componentes de Loading
+   ========================================================================== */
+
+.spinner {
+  @apply animate-spin rounded-full border-2 border-gray-300;
+  border-top-color: theme('colors.blue.600');
+}
+
+.spinner-sm {
+  @apply w-4 h-4;
+}
+
+.spinner-md {
+  @apply w-6 h-6;
+}
+
+.spinner-lg {
+  @apply w-8 h-8;
+}
+
+.spinner-xl {
+  @apply w-12 h-12;
+}
+
+/* Skeleton loading */
+.skeleton {
+  @apply animate-pulse bg-gray-200 rounded;
+}
+
+.skeleton-text {
+  @apply h-4 bg-gray-200 rounded;
+}
+
+.skeleton-title {
+  @apply h-6 bg-gray-200 rounded;
+}
+
+.skeleton-avatar {
+  @apply w-10 h-10 bg-gray-200 rounded-full;
+}
+
+.skeleton-image {
+  @apply w-full h-48 bg-gray-200 rounded-lg;
+}
+
+/* ==========================================================================
+   Componentes de Navegação
+   ========================================================================== */
+
+.nav-link {
+  @apply flex items-center px-3 py-2 text-sm font-medium;
+  @apply text-gray-600 rounded-lg;
+  @apply transition-colors duration-200;
+  @apply hover:text-gray-900 hover:bg-gray-100;
+}
+
+.nav-link-active {
+  @apply text-primary-600 bg-primary-50;
+  @apply hover:text-primary-700 hover:bg-primary-100;
+}
+
+.nav-icon {
+  @apply w-5 h-5 mr-3 flex-shrink-0;
+}
+
+/* Breadcrumb */
+.breadcrumb {
+  @apply flex items-center space-x-2 text-sm text-gray-500;
+}
+
+.breadcrumb-item {
+  @apply hover:text-gray-700 transition-colors duration-200;
+}
+
+.breadcrumb-separator {
+  @apply text-gray-400;
+}
+
+/* ==========================================================================
+   Componentes de Status
+   ========================================================================== */
+
+.status-indicator {
+  @apply inline-flex items-center;
+}
+
+.status-dot {
+  @apply w-2 h-2 rounded-full mr-2;
+}
+
+.status-not-started .status-dot {
+  @apply bg-gray-400;
+}
+
+.status-in-progress .status-dot {
+  @apply bg-blue-500;
+}
+
+.status-paused .status-dot {
+  @apply bg-amber-500;
+}
+
+.status-completed .status-dot {
+  @apply bg-green-500;
+}
+
+/* ==========================================================================
+   Componentes de Progress
+   ========================================================================== */
+
+.progress-bar {
+  @apply w-full bg-gray-200 rounded-full overflow-hidden;
+}
+
+.progress-fill {
+  @apply h-full bg-primary-600 transition-all duration-300 ease-out;
+}
+
+.progress-sm {
+  @apply h-1;
+}
+
+.progress-md {
+  @apply h-2;
+}
+
+.progress-lg {
+  @apply h-3;
+}
+
+/* Progress ring */
+.progress-ring {
+  @apply transform -rotate-90;
+}
+
+.progress-ring-background {
+  @apply stroke-gray-200;
+}
+
+.progress-ring-progress {
+  @apply stroke-primary-600 transition-all duration-300 ease-out;
+  stroke-linecap: round;
+}
+
+/* ==========================================================================
+   Componentes de Modal e Overlay
+   ========================================================================== */
+
+.modal-overlay {
+  @apply fixed inset-0 bg-black bg-opacity-50;
+  @apply flex items-center justify-center p-4;
+  @apply z-50;
+}
+
+.modal-content {
+  @apply bg-white rounded-xl shadow-strong;
+  @apply w-full max-w-md max-h-[90vh] overflow-y-auto;
+  @apply animate-scale-in;
+}
+
+.modal-header {
+  @apply px-6 py-4 border-b border-gray-200;
+  @apply flex items-center justify-between;
+}
+
+.modal-title {
+  @apply text-lg font-semibold text-gray-900;
+}
+
+.modal-close {
+  @apply text-gray-400 hover:text-gray-600;
+  @apply transition-colors duration-200;
+}
+
+.modal-body {
+  @apply px-6 py-4;
+}
+
+.modal-footer {
+  @apply px-6 py-4 border-t border-gray-200;
+  @apply flex items-center justify-end space-x-3;
+  @apply bg-gray-50;
+}
+
+/* ==========================================================================
+   Componentes de Dropdown
+   ========================================================================== */
+
+.dropdown {
+  @apply relative inline-block text-left;
+}
+
+.dropdown-content {
+  @apply absolute right-0 mt-2 w-56;
+  @apply bg-white rounded-lg shadow-medium border border-gray-200;
+  @apply py-1 z-50;
+  @apply animate-fade-in;
+}
+
+.dropdown-item {
+  @apply block px-4 py-2 text-sm text-gray-700;
+  @apply hover:bg-gray-100 hover:text-gray-900;
+  @apply transition-colors duration-200;
+}
+
+.dropdown-divider {
+  @apply border-t border-gray-200 my-1;
+}
+
+/* ==========================================================================
+   Componentes de Tooltip
+   ========================================================================== */
+
+.tooltip {
+  @apply absolute z-50 px-2 py-1;
+  @apply bg-gray-900 text-white text-xs rounded;
+  @apply animate-fade-in;
+}
+
+.tooltip-arrow {
+  @apply absolute w-2 h-2 bg-gray-900 transform rotate-45;
+}
+
+/* ==========================================================================
+   Componentes de Avatar
+   ========================================================================== */
+
+.avatar {
+  @apply inline-flex items-center justify-center;
+  @apply bg-gray-300 rounded-full overflow-hidden;
+  @apply text-gray-600 font-medium;
+}
+
+.avatar-xs {
+  @apply w-6 h-6 text-xs;
+}
+
+.avatar-sm {
+  @apply w-8 h-8 text-sm;
+}
+
+.avatar-md {
+  @apply w-10 h-10 text-base;
+}
+
+.avatar-lg {
+  @apply w-12 h-12 text-lg;
+}
+
+.avatar-xl {
+  @apply w-16 h-16 text-xl;
+}
+
+.avatar-group {
+  @apply flex -space-x-2;
+}
+
+.avatar-group .avatar {
+  @apply ring-2 ring-white;
+}
+
+/* ==========================================================================
+   Componentes de Lista
+   ========================================================================== */
+
+.list-item {
+  @apply flex items-center justify-between py-3;
+  @apply border-b border-gray-200 last:border-b-0;
+}
+
+.list-item-content {
+  @apply flex items-center space-x-3;
+}
+
+.list-item-title {
+  @apply font-medium text-gray-900;
+}
+
+.list-item-subtitle {
+  @apply text-sm text-gray-500;
+}
+
+.list-item-meta {
+  @apply text-xs text-gray-400;
+}
+
+/* ==========================================================================
+   Componentes de Notificação
+   ========================================================================== */
+
+.notification {
+  @apply max-w-sm w-full bg-white shadow-medium rounded-lg;
+  @apply border border-gray-200;
+  @apply animate-slide-up;
+}
+
+.notification-success {
+  @apply border-l-4 border-l-green-500;
+}
+
+.notification-warning {
+  @apply border-l-4 border-l-amber-500;
+}
+
+.notification-error {
+  @apply border-l-4 border-l-red-500;
+}
+
+.notification-info {
+  @apply border-l-4 border-l-blue-500;
+}
+
+.notification-content {
+  @apply p-4;
+}
+
+.notification-title {
+  @apply font-medium text-gray-900;
+}
+
+.notification-message {
+  @apply text-sm text-gray-600 mt-1;
+}
+
+/* ==========================================================================
+   Componentes de Tabela
+   ========================================================================== */
+
+.table {
+  @apply w-full divide-y divide-gray-200;
+}
+
+.table-header {
+  @apply bg-gray-50;
+}
+
+.table-header-cell {
+  @apply px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider;
+}
+
+.table-body {
+  @apply bg-white divide-y divide-gray-200;
+}
+
+.table-row {
+  @apply hover:bg-gray-50 transition-colors duration-200;
+}
+
+.table-cell {
+  @apply px-6 py-4 whitespace-nowrap text-sm text-gray-900;
+}
+
+.table-cell-secondary {
+  @apply text-gray-500;
+}

@@ -1,1 +1,1 @@
-// index.js
+export { peopleService } from './peopleService'

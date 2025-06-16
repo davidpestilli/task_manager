@@ -245,6 +245,7 @@ task_manager/
 │   │   │   ├── stringUtils.js
 │   │   │   ├── numberUtils.js
 │   │   │   ├── colorUtils.js
+│   │   │   ├── cn.js
 │   │   │   └── index.js
 │   │   ├── validations/
 │   │   │   ├── authValidations.js
