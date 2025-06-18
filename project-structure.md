@@ -6,6 +6,8 @@ task_manager/
 │   └── task_manager_rls_full_access (registro do sql que liberou toda politica rls no supabase)
 ├── public/
 │   ├── vite.svg
+│   ├── manifest.json (PWA)
+│   ├── sw.js (Service Worker)
 │   └── index.html
 ├── src/
 │   ├── components/
@@ -58,6 +60,7 @@ task_manager/
 │   │   │   ├── layout/
 │   │   │   │   ├── Layout.jsx
 │   │   │   │   ├── Header.jsx
+│   │   │   │   ├── ErrorBoundary.jsx
 │   │   │   │   ├── Sidebar.jsx
 │   │   │   │   ├── Footer.jsx
 │   │   │   │   └── index.js
@@ -81,6 +84,7 @@ task_manager/
 │   │   │   ├── export/
 │   │   │   │   ├── ExportButtons.jsx
 │   │   │   │   ├── PDFExport.jsx
+│   │   │   │   ├── PExportModal.jsx
 │   │   │   │   ├── CSVExport.jsx
 │   │   │   │   └── index.js
 │   │   │   ├── ui/
@@ -100,6 +104,7 @@ task_manager/
 │   │   │   │   ├── FlowEdge.jsx
 │   │   │   │   ├── StatCard.jsx
 │   │   │   │   ├── Chart.jsx
+│   │   │   │   ├── FullPageSpinner.jsx
 │   │   │   │   └── index.js
 │   │   │   ├── forms/
 │   │   │   │   ├── FormField.jsx
@@ -254,6 +259,8 @@ task_manager/
 │   │   ├── helpers/
 │   │   │   ├── dateFormatter.js
 │   │   │   ├── flowUtils.js
+│   │   │   ├── performanceUtils.js
+│   │   │   ├── exportUtils.js
 │   │   │   ├── validationUtils.js
 │   │   │   ├── dragDropAnalytics.js
 │   │   │   ├── dragDropUtils.js
@@ -320,9 +327,11 @@ task_manager/
 ├── tailwind.config.js
 ├── postcss.config.js
 ├── README.md
+├── CHANGELOG.md
 ├── eslint.config
 ├── index
 ├── package
+├── lighthouserc.json
 └── project-structure.md (este arquivo)
 
 

@@ -1,12 +1,10 @@
-// Serviços de tarefas
+// Exportações de todos os serviços de tarefas
 export * from './tasksService'
 export * from './taskStepsService'
 export * from './taskAssignmentsService'
-
-// Novo serviço de dependências
 export * from './taskDependenciesService'
 
-// Exportações nomeadas para facilitar importação
+// Exportações nomeadas específicas para facilitar importação
 export {
   // Tarefas principais
   createTask,
@@ -16,8 +14,14 @@ export {
   getTasks,
   getTasksByProject,
   getTasksByUser,
-  updateTaskStatus
+  updateTaskStatus,
+  calculateTaskProgress,
+  getTasksStats
 } from './tasksService'
+
+// Nota: As funções abaixo devem existir nos respectivos arquivos
+// Se algum arquivo não existir ainda, você pode comentar essas exportações
+
 
 export {
   // Etapas de tarefas

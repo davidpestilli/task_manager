@@ -1,4 +1,4 @@
-// Componentes de UI compartilhados
+// src/components/shared/ui/index.js
 export { default as Button } from './Button'
 export { default as Input } from './Input'
 export { default as Modal } from './Modal'
@@ -16,12 +16,5 @@ export { default as FlowEdge } from './FlowEdge'
 export { default as Chart } from './Chart'
 export { default as StatCard } from './StatCard'
 
-// Componente especial para loading de página inteira
-export const FullPageSpinner = ({ text = 'Carregando...' }) => (
-  <div className="min-h-screen flex items-center justify-center bg-gray-50">
-    <div className="text-center">
-      <Spinner size="lg" className="mx-auto mb-4" />
-      <p className="text-gray-600">{text}</p>
-    </div>
-  </div>
-)
+// Componente especial importado de arquivo separado
+export { default as FullPageSpinner } from './FullPageSpinner'

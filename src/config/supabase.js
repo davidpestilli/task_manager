@@ -1,8 +1,9 @@
 import { createClient } from '@supabase/supabase-js'
+import { SUPABASE_CONFIG } from './environment.js'
 
-// Configurações do Supabase
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
+// Configurações do Supabase (usando environment.js)
+const supabaseUrl = SUPABASE_CONFIG.url
+const supabaseAnonKey = SUPABASE_CONFIG.anonKey
 
 // Validação das variáveis de ambiente
 if (!supabaseUrl) {

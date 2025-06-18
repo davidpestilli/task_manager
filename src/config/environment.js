@@ -25,12 +25,16 @@ const getEnvNumber = (key, defaultValue = 0) => {
   return isNaN(parsed) ? defaultValue : parsed
 }
 
+// EXPORTAÇÕES DIRETAS para compatibilidade com imports existentes
+export const SUPABASE_URL = getEnvVar('VITE_SUPABASE_URL')
+export const SUPABASE_ANON_KEY = getEnvVar('VITE_SUPABASE_ANON_KEY')
+
 // Configurações do Supabase
 export const SUPABASE_CONFIG = {
-  url: getEnvVar('VITE_SUPABASE_URL'),
-  anonKey: getEnvVar('VITE_SUPABASE_ANON_KEY'),
+  url: SUPABASE_URL,
+  anonKey: SUPABASE_ANON_KEY,
   isConfigured: () => {
-    return !!(SUPABASE_CONFIG.url && SUPABASE_CONFIG.anonKey)
+    return !!(SUPABASE_URL && SUPABASE_ANON_KEY)
   }
 }
 

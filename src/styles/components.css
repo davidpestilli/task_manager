@@ -110,7 +110,7 @@
 
 .form-textarea {
   @apply form-input;
-  @apply resize-vertical;
+  @apply resize-y;
   @apply min-h-[80px];
 }
 

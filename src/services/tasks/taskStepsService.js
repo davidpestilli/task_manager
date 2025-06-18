@@ -59,7 +59,8 @@ export const createTaskStep = async (stepData) => {
       name: name.trim(),
       description: description?.trim() || null,
       step_order: step_order || 1,
-      is_completed: false
+      is_completed: false,
+      created_at: new Date().toISOString()
     })
     .select(`
       *,
@@ -107,6 +108,8 @@ export const updateTaskStep = async (stepId, updates) => {
     throw new Error('Nenhum campo válido para atualizar')
   }
 
+  cleanUpdates.updated_at = new Date().toISOString()
+
   const { data, error } = await supabase
     .from('task_steps')
     .update(cleanUpdates)
@@ -130,21 +133,105 @@ export const updateTaskStep = async (stepId, updates) => {
 }
 
 /**
- * Marca uma etapa como concluída ou não concluída
+ * Marca uma etapa como concluída
+ * @param {string} stepId - ID da etapa
+ * @param {string} userId - ID do usuário que está marcando
+ * @returns {Promise<Object>} Etapa atualizada
+ */
+export const markStepAsCompleted = async (stepId, userId) => {
+  if (!stepId || !userId) {
+    throw new Error('ID da etapa e ID do usuário são obrigatórios')
+  }
+
+  const updates = {
+    is_completed: true,
+    completed_by: userId,
+    completed_at: new Date().toISOString(),
+    updated_at: new Date().toISOString()
+  }
+
+  const { data, error } = await supabase
+    .from('task_steps')
+    .update(updates)
+    .eq('id', stepId)
+    .select(`
+      *,
+      completed_by_profile:profiles!task_steps_completed_by_fkey(
+        id,
+        full_name,
+        avatar_url
+      )
+    `)
+    .single()
+
+  if (error) {
+    console.error('Erro ao marcar etapa como concluída:', error)
+    throw new Error(`Erro ao marcar etapa como concluída: ${error.message}`)
+  }
+
+  return data
+}
+
+/**
+ * Marca uma etapa como não concluída
+ * @param {string} stepId - ID da etapa
+ * @returns {Promise<Object>} Etapa atualizada
+ */
+export const markStepAsIncomplete = async (stepId) => {
+  if (!stepId) {
+    throw new Error('ID da etapa é obrigatório')
+  }
+
+  const updates = {
+    is_completed: false,
+    completed_by: null,
+    completed_at: null,
+    updated_at: new Date().toISOString()
+  }
+
+  const { data, error } = await supabase
+    .from('task_steps')
+    .update(updates)
+    .eq('id', stepId)
+    .select(`
+      *,
+      completed_by_profile:profiles!task_steps_completed_by_fkey(
+        id,
+        full_name,
+        avatar_url
+      )
+    `)
+    .single()
+
+  if (error) {
+    console.error('Erro ao marcar etapa como não concluída:', error)
+    throw new Error(`Erro ao marcar etapa como não concluída: ${error.message}`)
+  }
+
+  return data
+}
+
+/**
+ * Alterna o status de conclusão de uma etapa
  * @param {string} stepId - ID da etapa
  * @param {boolean} isCompleted - Se a etapa está concluída
  * @param {string} userId - ID do usuário que está marcando
  * @returns {Promise<Object>} Etapa atualizada
  */
 export const toggleTaskStepCompletion = async (stepId, isCompleted, userId) => {
-  if (!stepId || !userId) {
-    throw new Error('ID da etapa e ID do usuário são obrigatórios')
+  if (!stepId) {
+    throw new Error('ID da etapa é obrigatório')
+  }
+
+  if (isCompleted && !userId) {
+    throw new Error('ID do usuário é obrigatório para marcar como concluída')
   }
 
   const updates = {
     is_completed: isCompleted,
     completed_by: isCompleted ? userId : null,
-    completed_at: isCompleted ? new Date().toISOString() : null
+    completed_at: isCompleted ? new Date().toISOString() : null,
+    updated_at: new Date().toISOString()
   }
 
   const { data, error } = await supabase
@@ -208,7 +295,10 @@ export const reorderTaskSteps = async (taskId, stepIds) => {
     const updatePromises = stepIds.map((stepId, index) => 
       supabase
         .from('task_steps')
-        .update({ step_order: index + 1 })
+        .update({ 
+          step_order: index + 1,
+          updated_at: new Date().toISOString()
+        })
         .eq('id', stepId)
         .eq('task_id', taskId) // Validação adicional de segurança
     )
@@ -252,7 +342,8 @@ export const addMultipleSteps = async (taskId, steps) => {
     name: step.name.trim(),
     description: step.description?.trim() || null,
     step_order: nextOrder + index,
-    is_completed: false
+    is_completed: false,
+    created_at: new Date().toISOString()
   }))
 
   const { data, error } = await supabase
@@ -323,7 +414,7 @@ export const getPendingStepsByTasks = async (taskIds) => {
 
   // Agrupar por tarefa
   const groupedSteps = {}
-  data.forEach(step => {
+  data?.forEach(step => {
     if (!groupedSteps[step.task_id]) {
       groupedSteps[step.task_id] = []
     }
@@ -331,4 +422,64 @@ export const getPendingStepsByTasks = async (taskIds) => {
   })
 
   return groupedSteps
+}
+
+/**
+ * Busca próxima etapa a ser completada em uma tarefa
+ * @param {string} taskId - ID da tarefa
+ * @returns {Promise<Object|null>} Próxima etapa ou null se todas completadas
+ */
+export const getNextStep = async (taskId) => {
+  if (!taskId) {
+    throw new Error('ID da tarefa é obrigatório')
+  }
+
+  const { data, error } = await supabase
+    .from('task_steps')
+    .select(`
+      *,
+      completed_by_profile:profiles!task_steps_completed_by_fkey(
+        id,
+        full_name,
+        avatar_url
+      )
+    `)
+    .eq('task_id', taskId)
+    .eq('is_completed', false)
+    .order('step_order', { ascending: true })
+    .limit(1)
+
+  if (error) {
+    console.error('Erro ao buscar próxima etapa:', error)
+    throw new Error(`Erro ao buscar próxima etapa: ${error.message}`)
+  }
+
+  return data && data.length > 0 ? data[0] : null
+}
+
+/**
+ * Duplica etapas de uma tarefa para outra
+ * @param {string} fromTaskId - ID da tarefa origem
+ * @param {string} toTaskId - ID da tarefa destino
+ * @returns {Promise<Array>} Etapas duplicadas
+ */
+export const duplicateSteps = async (fromTaskId, toTaskId) => {
+  if (!fromTaskId || !toTaskId) {
+    throw new Error('IDs das tarefas são obrigatórios')
+  }
+
+  // Buscar etapas da tarefa origem
+  const sourceSteps = await getTaskSteps(fromTaskId)
+  
+  if (sourceSteps.length === 0) {
+    return []
+  }
+
+  // Criar etapas para a tarefa destino
+  const stepsToCreate = sourceSteps.map(step => ({
+    name: step.name,
+    description: step.description
+  }))
+
+  return await addMultipleSteps(toTaskId, stepsToCreate)
 }

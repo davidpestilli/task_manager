@@ -13,12 +13,17 @@
     "deploy": "gh-pages -d dist"
   },
   "dependencies": {
+    "@reactflow/background": "^11.3.14",
+    "@reactflow/controls": "^11.2.14",
+    "@reactflow/core": "^11.11.4",
+    "@reactflow/minimap": "^11.7.14",
     "@supabase/supabase-js": "^2.38.4",
     "@tanstack/react-query": "^5.80.7",
     "clsx": "^2.0.0",
     "date-fns": "^2.30.0",
     "framer-motion": "^10.16.5",
     "jspdf": "^2.5.1",
+    "jspdf-autotable": "^5.0.2",
     "lucide-react": "^0.294.0",
     "papaparse": "^5.4.1",
     "react": "^18.2.0",
@@ -28,6 +33,7 @@
     "react-hook-form": "^7.48.2",
     "react-hot-toast": "^2.4.1",
     "react-router-dom": "^6.20.1",
+    "reactflow": "^11.11.4",
     "recharts": "^2.8.0",
     "zustand": "^4.4.7"
   },

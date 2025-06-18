@@ -1,72 +1,11 @@
 import { supabase } from '@/config/supabase'
 
 /**
- * Serviço para operações CRUD de tarefas
- * Responsável por todas as operações relacionadas às tarefas no Supabase
- */
-
-/**
- * Busca todas as tarefas de um projeto
- * @param {string} projectId - ID do projeto
- * @returns {Promise<Array>} Lista de tarefas com dados relacionados
- */
-export const getTasksByProject = async (projectId) => {
-  if (!projectId) {
-    throw new Error('ID do projeto é obrigatório')
-  }
-
-  const { data, error } = await supabase
-    .from('tasks')
-    .select(`
-      *,
-      created_by_profile:profiles!tasks_created_by_fkey(
-        id,
-        full_name,
-        avatar_url,
-        email
-      ),
-      task_assignments(
-        id,
-        assigned_at,
-        assigned_by,
-        user:profiles!task_assignments_user_id_fkey(
-          id,
-          full_name,
-          avatar_url,
-          email
-        ),
-        assigned_by_profile:profiles!task_assignments_assigned_by_fkey(
-          id,
-          full_name
-        )
-      ),
-      task_steps(
-        id,
-        name,
-        description,
-        is_completed,
-        step_order,
-        completed_by,
-        completed_at
-      )
-    `)
-    .eq('project_id', projectId)
-    .order('created_at', { ascending: false })
-
-  if (error) {
-    console.error('Erro ao buscar tarefas:', error)
-    throw new Error(`Erro ao buscar tarefas: ${error.message}`)
-  }
-
-  return data || []
-}
-
-/**
  * Busca uma tarefa específica por ID
  * @param {string} taskId - ID da tarefa
- * @returns {Promise<Object>} Dados completos da tarefa
+ * @returns {Promise<Object>} Dados da tarefa
  */
-export const getTaskById = async (taskId) => {
+export const getTask = async (taskId) => {
   if (!taskId) {
     throw new Error('ID da tarefa é obrigatório')
   }
@@ -75,11 +14,6 @@ export const getTaskById = async (taskId) => {
     .from('tasks')
     .select(`
       *,
-      project:projects(
-        id,
-        name,
-        description
-      ),
       created_by_profile:profiles!tasks_created_by_fkey(
         id,
         full_name,
@@ -110,6 +44,11 @@ export const getTaskById = async (taskId) => {
           full_name,
           avatar_url
         )
+      ),
+      project:projects(
+        id,
+        name,
+        description
       )
     `)
     .eq('id', taskId)
@@ -127,18 +66,248 @@ export const getTaskById = async (taskId) => {
 }
 
 /**
+ * Busca todas as tarefas (com paginação opcional)
+ * @param {Object} options - Opções de busca
+ * @returns {Promise<Array>} Lista de tarefas
+ */
+export const getTasks = async (options = {}) => {
+  const { 
+    page = 1, 
+    limit = 50, 
+    orderBy = 'created_at', 
+    orderDirection = 'desc',
+    includeCompleted = true 
+  } = options
+
+  let query = supabase
+    .from('tasks')
+    .select(`
+      *,
+      created_by_profile:profiles!tasks_created_by_fkey(
+        id,
+        full_name,
+        avatar_url
+      ),
+      task_assignments(
+        id,
+        user:profiles!task_assignments_user_id_fkey(
+          id,
+          full_name,
+          avatar_url
+        )
+      ),
+      task_steps(
+        id,
+        name,
+        is_completed,
+        step_order
+      ),
+      project:projects(
+        id,
+        name
+      )
+    `)
+
+  // Filtrar tarefas concluídas se necessário
+  if (!includeCompleted) {
+    query = query.neq('status', 'completed')
+  }
+
+  // Ordenação
+  query = query.order(orderBy, { ascending: orderDirection === 'asc' })
+
+  // Paginação
+  if (limit > 0) {
+    const from = (page - 1) * limit
+    const to = from + limit - 1
+    query = query.range(from, to)
+  }
+
+  const { data, error } = await query
+
+  if (error) {
+    console.error('Erro ao buscar tarefas:', error)
+    throw new Error(`Erro ao buscar tarefas: ${error.message}`)
+  }
+
+  return data || []
+}
+
+/**
+ * Busca tarefas de um projeto específico
+ * @param {string} projectId - ID do projeto
+ * @param {Object} filters - Filtros opcionais
+ * @returns {Promise<Array>} Lista de tarefas do projeto
+ */
+export const getTasksByProject = async (projectId, filters = {}) => {
+  if (!projectId) {
+    throw new Error('ID do projeto é obrigatório')
+  }
+
+  let query = supabase
+    .from('tasks')
+    .select(`
+      *,
+      created_by_profile:profiles!tasks_created_by_fkey(
+        id,
+        full_name,
+        avatar_url
+      ),
+      task_assignments(
+        id,
+        user:profiles!task_assignments_user_id_fkey(
+          id,
+          full_name,
+          avatar_url
+        )
+      ),
+      task_steps(
+        id,
+        name,
+        is_completed,
+        step_order
+      )
+    `)
+    .eq('project_id', projectId)
+
+  // Aplicar filtros
+  if (filters.status && filters.status !== 'all') {
+    query = query.eq('status', filters.status)
+  }
+
+  if (filters.search && filters.search.trim()) {
+    query = query.or(`name.ilike.%${filters.search.trim()}%,description.ilike.%${filters.search.trim()}%`)
+  }
+
+  if (filters.assignedUser) {
+    // Filtrar por usuário atribuído
+    const { data: assignments } = await supabase
+      .from('task_assignments')
+      .select('task_id')
+      .eq('user_id', filters.assignedUser)
+    
+    if (assignments && assignments.length > 0) {
+      const taskIds = assignments.map(a => a.task_id)
+      query = query.in('id', taskIds)
+    } else {
+      // Se não há assignments, retorna array vazio
+      return []
+    }
+  }
+
+  // Ordenação
+  const orderBy = filters.orderBy || 'created_at'
+  const orderDirection = filters.orderDirection || 'desc'
+  query = query.order(orderBy, { ascending: orderDirection === 'asc' })
+
+  const { data, error } = await query
+
+  if (error) {
+    console.error('Erro ao buscar tarefas do projeto:', error)
+    throw new Error(`Erro ao buscar tarefas: ${error.message}`)
+  }
+
+  return data || []
+}
+
+/**
+ * Busca tarefas atribuídas a um usuário específico
+ * @param {string} userId - ID do usuário
+ * @param {Object} options - Opções de busca
+ * @returns {Promise<Array>} Lista de tarefas do usuário
+ */
+export const getTasksByUser = async (userId, options = {}) => {
+  if (!userId) {
+    throw new Error('ID do usuário é obrigatório')
+  }
+
+  const { includeCompleted = true, projectId = null } = options
+
+  // Primeiro busca as tarefas atribuídas ao usuário
+  let assignmentsQuery = supabase
+    .from('task_assignments')
+    .select('task_id')
+    .eq('user_id', userId)
+
+  const { data: assignments, error: assignmentsError } = await assignmentsQuery
+
+  if (assignmentsError) {
+    console.error('Erro ao buscar atribuições:', assignmentsError)
+    throw new Error(`Erro ao buscar tarefas do usuário: ${assignmentsError.message}`)
+  }
+
+  if (!assignments || assignments.length === 0) {
+    return []
+  }
+
+  const taskIds = assignments.map(a => a.task_id)
+
+  let query = supabase
+    .from('tasks')
+    .select(`
+      *,
+      created_by_profile:profiles!tasks_created_by_fkey(
+        id,
+        full_name,
+        avatar_url
+      ),
+      task_assignments(
+        id,
+        user:profiles!task_assignments_user_id_fkey(
+          id,
+          full_name,
+          avatar_url
+        )
+      ),
+      task_steps(
+        id,
+        name,
+        is_completed,
+        step_order
+      ),
+      project:projects(
+        id,
+        name
+      )
+    `)
+    .in('id', taskIds)
+
+  // Filtros opcionais
+  if (!includeCompleted) {
+    query = query.neq('status', 'completed')
+  }
+
+  if (projectId) {
+    query = query.eq('project_id', projectId)
+  }
+
+  query = query.order('created_at', { ascending: false })
+
+  const { data, error } = await query
+
+  if (error) {
+    console.error('Erro ao buscar tarefas do usuário:', error)
+    throw new Error(`Erro ao buscar tarefas: ${error.message}`)
+  }
+
+  return data || []
+}
+
+/**
  * Cria uma nova tarefa
  * @param {Object} taskData - Dados da tarefa
- * @param {string} taskData.name - Nome da tarefa
- * @param {string} taskData.description - Descrição da tarefa
- * @param {string} taskData.project_id - ID do projeto
- * @param {string} taskData.created_by - ID do usuário criador
- * @param {Array} taskData.assignedUsers - IDs dos usuários atribuídos
- * @param {Array} taskData.steps - Lista de etapas da tarefa
  * @returns {Promise<Object>} Tarefa criada
  */
 export const createTask = async (taskData) => {
-  const { name, description, project_id, created_by, assignedUsers = [], steps = [] } = taskData
+  const { 
+    name, 
+    description, 
+    project_id, 
+    created_by, 
+    assignedUsers = [], 
+    steps = [],
+    status = 'todo'
+  } = taskData
 
   if (!name || !project_id || !created_by) {
     throw new Error('Nome, projeto e criador são obrigatórios')
@@ -153,7 +322,7 @@ export const createTask = async (taskData) => {
   }
 
   try {
-    // Iniciar transação
+    // Criar a tarefa
     const { data: task, error: taskError } = await supabase
       .from('tasks')
       .insert({
@@ -161,67 +330,65 @@ export const createTask = async (taskData) => {
         description: description?.trim() || null,
         project_id,
         created_by,
-        status: 'não_iniciada'
+        status,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
       })
       .select()
       .single()
 
     if (taskError) {
+      console.error('Erro ao criar tarefa:', taskError)
       throw new Error(`Erro ao criar tarefa: ${taskError.message}`)
     }
 
     // Criar atribuições
-    if (assignedUsers.length > 0) {
-      const assignments = assignedUsers.map(userId => ({
-        task_id: task.id,
-        user_id: userId,
-        assigned_by: created_by
-      }))
+    const assignments = assignedUsers.map(userId => ({
+      task_id: task.id,
+      user_id: userId,
+      assigned_by: created_by,
+      assigned_at: new Date().toISOString()
+    }))
 
-      const { error: assignmentError } = await supabase
-        .from('task_assignments')
-        .insert(assignments)
+    const { error: assignmentsError } = await supabase
+      .from('task_assignments')
+      .insert(assignments)
 
-      if (assignmentError) {
-        // Rollback: deletar tarefa criada
-        await supabase.from('tasks').delete().eq('id', task.id)
-        throw new Error(`Erro ao atribuir usuários: ${assignmentError.message}`)
-      }
+    if (assignmentsError) {
+      console.error('Erro ao criar atribuições:', assignmentsError)
+      throw new Error(`Erro ao atribuir usuários: ${assignmentsError.message}`)
     }
 
     // Criar etapas
-    if (steps.length > 0) {
-      const taskSteps = steps.map((step, index) => ({
-        task_id: task.id,
-        name: step.name.trim(),
-        description: step.description?.trim() || null,
-        step_order: index + 1,
-        is_completed: false
-      }))
+    const taskSteps = steps.map((step, index) => ({
+      task_id: task.id,
+      name: step.name.trim(),
+      description: step.description?.trim() || null,
+      step_order: index + 1,
+      is_completed: false,
+      created_at: new Date().toISOString()
+    }))
 
-      const { error: stepsError } = await supabase
-        .from('task_steps')
-        .insert(taskSteps)
+    const { error: stepsError } = await supabase
+      .from('task_steps')
+      .insert(taskSteps)
 
-      if (stepsError) {
-        // Rollback: deletar tarefa e atribuições
-        await supabase.from('task_assignments').delete().eq('task_id', task.id)
-        await supabase.from('tasks').delete().eq('id', task.id)
-        throw new Error(`Erro ao criar etapas: ${stepsError.message}`)
-      }
+    if (stepsError) {
+      console.error('Erro ao criar etapas:', stepsError)
+      throw new Error(`Erro ao criar etapas: ${stepsError.message}`)
     }
 
-    // Buscar tarefa completa
-    return await getTaskById(task.id)
+    // Retornar a tarefa criada com os dados relacionados
+    return await getTask(task.id)
 
   } catch (error) {
-    console.error('Erro ao criar tarefa:', error)
+    console.error('Erro no processo de criação da tarefa:', error)
     throw error
   }
 }
 
 /**
- * Atualiza uma tarefa existente
+ * Atualiza uma tarefa
  * @param {string} taskId - ID da tarefa
  * @param {Object} updates - Dados para atualizar
  * @returns {Promise<Object>} Tarefa atualizada
@@ -266,6 +433,29 @@ export const updateTask = async (taskId, updates) => {
 }
 
 /**
+ * Atualiza o status de uma tarefa
+ * @param {string} taskId - ID da tarefa
+ * @param {string} status - Novo status
+ * @returns {Promise<Object>} Tarefa atualizada
+ */
+export const updateTaskStatus = async (taskId, status) => {
+  if (!taskId) {
+    throw new Error('ID da tarefa é obrigatório')
+  }
+
+  if (!status) {
+    throw new Error('Status é obrigatório')
+  }
+
+  const validStatuses = ['todo', 'in_progress', 'review', 'completed']
+  if (!validStatuses.includes(status)) {
+    throw new Error('Status inválido')
+  }
+
+  return await updateTask(taskId, { status })
+}
+
+/**
  * Exclui uma tarefa
  * @param {string} taskId - ID da tarefa
  * @returns {Promise<boolean>} True se excluída com sucesso
@@ -301,72 +491,49 @@ export const calculateTaskProgress = (steps = []) => {
 }
 
 /**
- * Busca tarefas com filtros
+ * Busca estatísticas de tarefas de um projeto
  * @param {string} projectId - ID do projeto
- * @param {Object} filters - Filtros a aplicar
- * @returns {Promise<Array>} Lista de tarefas filtradas
+ * @returns {Promise<Object>} Estatísticas das tarefas
  */
-export const getTasksWithFilters = async (projectId, filters = {}) => {
+export const getTasksStats = async (projectId) => {
   if (!projectId) {
     throw new Error('ID do projeto é obrigatório')
   }
 
-  let query = supabase
+  const { data, error } = await supabase
     .from('tasks')
-    .select(`
-      *,
-      created_by_profile:profiles!tasks_created_by_fkey(
-        id,
-        full_name,
-        avatar_url
-      ),
-      task_assignments(
-        id,
-        user:profiles!task_assignments_user_id_fkey(
-          id,
-          full_name,
-          avatar_url
-        )
-      ),
-      task_steps(
-        id,
-        name,
-        is_completed,
-        step_order
-      )
-    `)
+    .select('status, task_steps(is_completed)')
     .eq('project_id', projectId)
 
-  // Aplicar filtros
-  if (filters.status && filters.status !== 'all') {
-    query = query.eq('status', filters.status)
-  }
-
-  if (filters.search && filters.search.trim()) {
-    query = query.or(`name.ilike.%${filters.search.trim()}%,description.ilike.%${filters.search.trim()}%`)
-  }
-
-  if (filters.assignedUser) {
-    // Filtrar por usuário atribuído usando inner join
-    query = query.in('id', 
-      supabase
-        .from('task_assignments')
-        .select('task_id')
-        .eq('user_id', filters.assignedUser)
-    )
-  }
-
-  // Ordenação
-  const orderBy = filters.orderBy || 'created_at'
-  const orderDirection = filters.orderDirection || 'desc'
-  query = query.order(orderBy, { ascending: orderDirection === 'asc' })
-
-  const { data, error } = await query
-
   if (error) {
-    console.error('Erro ao buscar tarefas com filtros:', error)
-    throw new Error(`Erro ao buscar tarefas: ${error.message}`)
+    console.error('Erro ao buscar estatísticas:', error)
+    throw new Error(`Erro ao buscar estatísticas: ${error.message}`)
   }
 
-  return data || []
+  if (!data) return null
+
+  const stats = {
+    total: data.length,
+    todo: 0,
+    in_progress: 0,
+    review: 0,
+    completed: 0,
+    totalSteps: 0,
+    completedSteps: 0
+  }
+
+  data.forEach(task => {
+    stats[task.status] = (stats[task.status] || 0) + 1
+    
+    if (task.task_steps) {
+      stats.totalSteps += task.task_steps.length
+      stats.completedSteps += task.task_steps.filter(step => step.is_completed).length
+    }
+  })
+
+  stats.overallProgress = stats.totalSteps > 0 
+    ? Math.round((stats.completedSteps / stats.totalSteps) * 100) 
+    : 0
+
+  return stats
 }

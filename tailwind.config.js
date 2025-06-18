@@ -51,16 +51,29 @@ export default {
       },
       animation: {
         'fade-in': 'fadeIn 0.2s ease-in-out',
+        'fade-out': 'fadeOut 0.3s ease-out forwards',
         'slide-up': 'slideUp 0.3s ease-out',
         'slide-down': 'slideDown 0.3s ease-out',
         'scale-in': 'scaleIn 0.2s ease-out',
         'pulse-soft': 'pulseSoft 2s infinite',
         'shimmer': 'shimmer 2s infinite linear'
       },
+            animationDelay: {
+        '75': '75ms',
+        '100': '100ms',
+        '150': '150ms',
+        '200': '200ms',
+        '300': '300ms',
+        '500': '500ms',
+      },
       keyframes: {
         fadeIn: {
           '0%': { opacity: '0' },
           '100%': { opacity: '1' }
+        },
+                fadeOut: {
+          '0%': { opacity: '1', transform: 'translateY(0)' },
+          '100%': { opacity: '0', transform: 'translateY(-10px)' }
         },
         slideUp: {
           '0%': { transform: 'translateY(10px)', opacity: '0' },
@@ -98,5 +111,28 @@ export default {
       strategy: 'class'
     }),
     require('@tailwindcss/typography'),
+        function({ addUtilities }) {
+      const animationDelays = {
+        '.animate-delay-75': {
+          'animation-delay': '75ms',
+        },
+        '.animate-delay-100': {
+          'animation-delay': '100ms',
+        },
+        '.animate-delay-150': {
+          'animation-delay': '150ms',
+        },
+        '.animate-delay-200': {
+          'animation-delay': '200ms',
+        },
+        '.animate-delay-300': {
+          'animation-delay': '300ms',
+        },
+        '.animate-delay-500': {
+          'animation-delay': '500ms',
+        },
+      }
+      addUtilities(animationDelays)
+    }
   ],
 }

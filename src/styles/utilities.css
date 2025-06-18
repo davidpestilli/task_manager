@@ -224,6 +224,8 @@
    Utilitários de Animação
    ========================================================================== */
 
+
+@layer utilities {
 /* Animações de entrada */
 .animate-fade-in {
   animation: fadeIn 0.3s ease-out forwards;
@@ -251,6 +253,10 @@
 
 .animate-bounce-in {
   animation: bounceIn 0.6s ease-out forwards;
+}
+
+.animate-fade-out {
+  animation: fadeOut 0.3s ease-out forwards;
 }
 
 /* Delays para animações em cascata */
@@ -569,4 +575,16 @@
     opacity: 1;
     transform: scale(1);
   }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+}
 }
